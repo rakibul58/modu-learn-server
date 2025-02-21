@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(`/api/v1`, router);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('SteerAway server is running!');
+  res.send('Modu Learn server is running!');
 });
 
 // middlewares

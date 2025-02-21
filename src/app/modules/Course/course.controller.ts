@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
-import { AuthServices } from '../Auth/auth.service';
 import catchAsync from '../../utils/catchAsync';
+import { CourseService } from './course.service';
 
 const createCourse = catchAsync(async (req, res) => {
-  const result = await AuthServices.registerUserIntoDB(req.body);
+  const result = await CourseService.createCourse(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -14,6 +14,18 @@ const createCourse = catchAsync(async (req, res) => {
   });
 });
 
+const getAllCourse = catchAsync(async (req, res) => {
+  const result = await CourseService.getAllCourse(req.query);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Courses Fetched successfully',
+    data: result,
+  });
+});
+
 export const CourseController = {
   createCourse,
+  getAllCourse,
 };

@@ -17,6 +17,14 @@ const signupUser = catchAsync(async (req, res) => {
 
 const signInUser = catchAsync(async (req, res) => {
   const result = await AuthServices.signInUserFromDB(req.body);
+
+  res.cookie('accessToken', result.accessToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 1,
+  });
+
   res.cookie('refreshToken', result.refreshToken, {
     secure: true,
     httpOnly: true,
@@ -38,6 +46,13 @@ const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
   const result = await AuthServices.refreshToken(refreshToken);
 
+  res.cookie('accessToken', result.accessToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 1,
+  });
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -56,8 +71,6 @@ const getProfileData = catchAsync(async (req, res) => {
     data: user,
   });
 });
-
-
 
 export const AuthControllers = {
   signupUser,

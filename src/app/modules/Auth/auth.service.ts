@@ -42,13 +42,13 @@ const signInUserFromDB = async (payload: ISignInUser) => {
   const accessToken = createToken(
     jwtPayload as { role: string; email: string },
     config.jwt_access_secret as string,
-    parseInt(config.jwt_access_expires_in as string),
+    "1d",
   );
 
   const refreshToken = createToken(
     jwtPayload as { role: string; email: string },
     config.jwt_refresh_secret as string,
-    parseInt(config.jwt_refresh_expires_in as string),
+    "365d",
   );
 
   return {
@@ -85,7 +85,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken(
     jwtPayload as { role: string; email: string },
     config.jwt_access_secret as string,
-    parseInt(config.jwt_access_expires_in as string),
+    "1d",
   );
 
   return {

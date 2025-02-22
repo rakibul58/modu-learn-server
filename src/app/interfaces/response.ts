@@ -4,4 +4,5 @@ export type TResponse<T> = {
   message?: string;
   data: T;
   token?: string;
+  meta?: T;
 };

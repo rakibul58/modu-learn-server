@@ -21,15 +21,11 @@ const signInUser = catchAsync(async (req, res) => {
   res.cookie('accessToken', result.accessToken, {
     secure: true,
     httpOnly: true,
-    sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 * 1,
   });
 
   res.cookie('refreshToken', result.refreshToken, {
     secure: true,
     httpOnly: true,
-    sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   sendResponse(res, {

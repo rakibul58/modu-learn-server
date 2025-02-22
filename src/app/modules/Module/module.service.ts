@@ -35,7 +35,7 @@ const createModule = async (payload: Partial<IModule>) => {
 
 const getAllModules = async (query: Record<string, unknown>) => {
   const moduleQuery = new QueryBuilder(Module.find().populate('course'), query)
-    .search(['title', 'description'])
+    .search(['title'])
     .filter()
     .sort()
     .paginate()

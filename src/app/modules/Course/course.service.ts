@@ -12,7 +12,7 @@ const createCourse = async (payload: Partial<ICourse>) => {
 };
 
 const getAllCourse = async (query: Record<string, unknown>) => {
-  const courseQuery = new QueryBuilder(Course.find().populate(''), query)
+  const courseQuery = new QueryBuilder(Course.find(), query)
     .search(['title', 'description'])
     .filter()
     .sort()
@@ -25,7 +25,7 @@ const getAllCourse = async (query: Record<string, unknown>) => {
   ]);
 
   if (!result.length) {
-    throw new AppError(httpStatus.NOT_FOUND, 'No bookings found');
+    throw new AppError(httpStatus.NOT_FOUND, 'No Course found');
   }
   return { result, meta };
 };

@@ -1,4 +1,4 @@
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { USER_ROLE } from './user.constant';
 
 /* eslint-disable no-unused-vars */
@@ -9,7 +9,6 @@ export interface IUser {
   email: string;
   role?: 'admin' | 'user';
   password: string;
-  completedContent: Types.ObjectId[];
   isDeleted?: boolean;
 }
 

@@ -26,7 +26,6 @@ const userSchema = new Schema<IUser, UserModel>(
       enum: userTypes,
       default: USER_ROLE.user,
     },
-    completedContent: [{ type: Schema.Types.ObjectId, ref: 'Content' }],
     isDeleted: {
       type: Boolean,
       default: false,

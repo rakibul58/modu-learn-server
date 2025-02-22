@@ -12,7 +12,7 @@ const createCourse = async (payload: Partial<ICourse>) => {
 };
 
 const getAllCourse = async (query: Record<string, unknown>) => {
-  const courseQuery = new QueryBuilder(Course.find().populate('Module'), query)
+  const courseQuery = new QueryBuilder(Course.find().populate(''), query)
     .search(['title', 'description'])
     .filter()
     .sort()

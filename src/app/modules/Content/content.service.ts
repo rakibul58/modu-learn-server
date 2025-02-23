@@ -6,6 +6,8 @@ import { getNextContentOrder } from './content.utils';
 import { Types } from 'mongoose';
 import { Content } from './content.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { JwtPayload } from 'jsonwebtoken';
+import { UserCourse } from '../UserCourse/userCourse.model';
 
 const createContent = async (payload: Partial<IContent>) => {
   const { title, type, data, module: moduleId } = payload;
@@ -57,7 +59,80 @@ const getAllContents = async (query: Record<string, unknown>) => {
   return { result, meta };
 };
 
+const getContentById = async (user: JwtPayload, id: string) => {
+  const content = await Content.findById(id);
+  if (!content) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Content not found');
+  }
+  if (user.role === 'user') {
+    const module = await Module.findById(content.module);
+    if (!module) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Module not found');
+    }
+    const isEnrolled = await UserCourse.findOne({
+      user: user._id,
+      course: module.course,
+    });
+    if (!isEnrolled) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        'You are not enrolled in this course',
+      );
+    }
+
+    return await Content.findById(id).populate('module');
+  }
+
+  return await Content.findById(id).populate('module');
+};
+
+const updateContent = async (id: string, payload: Partial<IContent>) => {
+  const content = await Content.findById(id);
+  if (!content) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Content not found');
+  }
+  const result = await Content.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+const deleteContent = async (id: string) => {
+  const content = await Content.findById(id);
+  if (!content) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Content not found');
+  }
+  const result = await Content.findByIdAndDelete(id);
+  return result;
+};
+
+const getContentByModule = async (user: JwtPayload, moduleId: string) => {
+  const module = await Module.findById(moduleId);
+  if (!module) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  if (user.role === 'user') {
+    const isEnrolled = await UserCourse.findOne({
+      user: user._id,
+      course: module.course,
+    });
+    if (!isEnrolled) {
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        'You are not enrolled in this course',
+      );
+    }
+
+    return await Content.find({ module: moduleId }).populate('module');
+  }
+
+  return await Content.find({ module: moduleId }).populate('module');
+};
+
 export const ContentService = {
   createContent,
   getAllContents,
+  getContentById,
+  updateContent,
+  deleteContent,
+  getContentByModule,
 };

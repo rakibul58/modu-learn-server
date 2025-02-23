@@ -25,7 +25,58 @@ const getAllContents = catchAsync(async (req, res) => {
   });
 });
 
+const getContentById = catchAsync(async (req, res) => {
+  const result = await ContentService.getContentById(req.user, req.params.id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Content fetched successfully',
+    data: result,
+  });
+});
+
+const updateContent = catchAsync(async (req, res) => {
+  const result = await ContentService.updateContent(req.params.id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Content updated successfully',
+    data: result,
+  });
+});
+
+const deleteContent = catchAsync(async (req, res) => {
+  const result = await ContentService.deleteContent(req.params.id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Content deleted successfully',
+    data: result,
+  });
+});
+
+const getContentByModule = catchAsync(async (req, res) => {
+  const result = await ContentService.getContentByModule(
+    req.user,
+    req.params.moduleId,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Contents fetched successfully',
+    data: result,
+  });
+});
+
 export const ContentController = {
   createContent,
   getAllContents,
+  getContentById,
+  updateContent,
+  deleteContent,
+  getContentByModule,
 };

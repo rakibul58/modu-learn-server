@@ -80,18 +80,21 @@ const enrollCourse = async (courseId: string, user: JwtPayload) => {
     return new AppError(httpStatus.BAD_REQUEST, 'Course already enrolled');
   }
 
-  const userCourse = new UserCourse({
-    user: user._id,
-    course: courseId,
-    moduleProgress: [],
-  });
-
   const modules = await Module.find({ course: courseId });
-  userCourse.moduleProgress = modules.map(module => ({
+  const moduleProgress = modules.map(module => ({
     moduleId: module._id,
     completionPercentage: 0,
     lastAccessedAt: new Date(),
   }));
+
+  const userCourse = new UserCourse({
+    user: user._id,
+    course: courseId,
+    completedContent: [],
+    completedModules: [],
+    moduleProgress,
+    courseCompletionPercentage: 0,
+  });
 
   const result = await userCourse.save();
 

@@ -128,6 +128,8 @@ const getContentByModule = async (user: JwtPayload, moduleId: string) => {
   return await Content.find({ module: moduleId }).populate('module');
 };
 
+
+
 export const ContentService = {
   createContent,
   getAllContents,

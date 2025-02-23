@@ -11,6 +11,21 @@ router
   .post(auth(USER_ROLE.admin), ContentController.createContent);
 
 router
+  .route('/check-access/:id')
+  .get(
+    auth(USER_ROLE.admin, USER_ROLE.user),
+    ContentController.checkContentAccess,
+  );
+
+router
+  .route('/progress/:courseId')
+  .get(auth(USER_ROLE.user), ContentController.getUserProgress);
+
+router
+  .route('/progress/:id')
+  .post(auth(USER_ROLE.user), ContentController.updateUserProgress);
+
+router
   .route('/:id')
   .get(auth(USER_ROLE.admin, USER_ROLE.user), ContentController.getContentById)
   .put(auth(USER_ROLE.admin), ContentController.updateContent)

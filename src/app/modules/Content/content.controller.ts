@@ -72,6 +72,47 @@ const getContentByModule = catchAsync(async (req, res) => {
   });
 });
 
+const checkContentAccess = catchAsync(async (req, res) => {
+  const result = await ContentService.checkContentAccess(
+    req.user,
+    req.params.id,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: result.canAccess
+      ? 'Content access checked successfully'
+      : 'Content access denied',
+    data: result,
+  });
+});
+
+const updateUserProgress = catchAsync(async (req, res) => {
+  const result = await ContentService.updateUserProgress(
+    req.user,
+    req.params.id,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User progress updated successfully',
+    data: result,
+  });
+});
+
+const getUserProgress = catchAsync(async (req, res) => {
+  const result = await ContentService.getUserProgress(req.user, req.params.courseId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User progress fetched successfully',
+    data: result,
+  });
+});
+
 export const ContentController = {
   createContent,
   getAllContents,
@@ -79,4 +120,7 @@ export const ContentController = {
   updateContent,
   deleteContent,
   getContentByModule,
+  checkContentAccess,
+  updateUserProgress,
+  getUserProgress
 };

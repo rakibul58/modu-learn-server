@@ -6,6 +6,8 @@ import { getNextModuleOrder } from './module.utlis';
 import { Types } from 'mongoose';
 import { Module } from './module.model';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { JwtPayload } from 'jsonwebtoken';
+import { UserCourse } from '../UserCourse/userCourse.model';
 
 const createModule = async (payload: Partial<IModule>) => {
   const { title, course: courseId } = payload;
@@ -52,7 +54,55 @@ const getAllModules = async (query: Record<string, unknown>) => {
   return { result, meta };
 };
 
+const getModuleById = async (id: string) => {
+  const module = await Module.findById(id).populate('course');
+  if (!module) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+  return module;
+};
+
+const updateModule = async (id: string, payload: Partial<IModule>) => {
+  const module = await Module.findById(id);
+  if (!module) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+  const result = await Module.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+const deleteModule = async (id: string) => {
+  const module = await Module.findById(id);
+  if (!module) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+  const result = await Module.findByIdAndDelete(id);
+  return result;
+};
+
+const getModulesByCourse = async (user: JwtPayload, courseId: string) => {
+  if (user.role === 'user') {
+    const isEnrolled = await UserCourse.findOne({
+      user: user._id,
+      course: courseId,
+    });
+    if (!isEnrolled) {
+      throw new AppError(httpStatus.UNAUTHORIZED, 'You are not enrolled');
+    }
+
+    const modules = await Module.find({ course: courseId }).populate('course');
+    return modules;
+  }
+
+  const modules = await Module.find({ course: courseId }).populate('course');
+  return modules;
+};
+
 export const ModuleService = {
   createModule,
   getAllModules,
+  getModuleById,
+  updateModule,
+  deleteModule,
+  getModulesByCourse,
 };

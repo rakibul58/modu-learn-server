@@ -3,6 +3,9 @@ import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../errors/AppError';
 import { ICourse } from './course.interface';
 import { Course } from './course.model';
+import { JwtPayload } from 'jsonwebtoken';
+import { UserCourse } from '../UserCourse/userCourse.model';
+import { Module } from '../Module/module.model';
 
 const createCourse = async (payload: Partial<ICourse>) => {
   const { title, description, price, thumbnail } = payload;
@@ -56,10 +59,51 @@ const deleteCourse = async (id: string) => {
   return result;
 };
 
+const getUserCourses = async (user: JwtPayload) => {
+  const courses = await UserCourse.find({ user: user._id })
+    .populate('course')
+    .sort({ lastAccessedAt: -1 });
+  return courses;
+};
+
+const enrollCourse = async (courseId: string, user: JwtPayload) => {
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+  const existingEnrollment = await UserCourse.findOne({
+    user: user._id,
+    course: courseId,
+  });
+
+  if (existingEnrollment) {
+    return new AppError(httpStatus.BAD_REQUEST, 'Course already enrolled');
+  }
+
+  const userCourse = new UserCourse({
+    user: user._id,
+    course: courseId,
+    moduleProgress: [],
+  });
+
+  const modules = await Module.find({ course: courseId });
+  userCourse.moduleProgress = modules.map(module => ({
+    moduleId: module._id,
+    completionPercentage: 0,
+    lastAccessedAt: new Date(),
+  }));
+
+  const result = await userCourse.save();
+
+  return result;
+};
+
 export const CourseService = {
   createCourse,
   getAllCourse,
   getCourseById,
   updateCourse,
   deleteCourse,
+  getUserCourses,
+  enrollCourse,
 };

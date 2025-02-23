@@ -11,6 +11,14 @@ router
   .post(auth(USER_ROLE.admin), CourseController.createCourse);
 
 router
+  .route('/user')
+  .get(auth(USER_ROLE.user), CourseController.getUserCourses);
+
+router
+  .route('/enroll/:courseId')
+  .post(auth(USER_ROLE.user), CourseController.enrollCourse);
+
+router
   .route('/:id')
   .get(CourseController.getCourseById)
   .put(auth(USER_ROLE.admin), CourseController.updateCourse)

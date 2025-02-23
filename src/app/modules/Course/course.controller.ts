@@ -58,10 +58,34 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+const getUserCourses = catchAsync(async (req, res) => {
+  const result = await CourseService.getUserCourses(req.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Courses Fetched successfully',
+    data: result,
+  });
+});
+
+const enrollCourse = catchAsync(async (req, res) => {
+  const result = await CourseService.enrollCourse(req.params.courseId, req.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Course enrolled successfully',
+    data: result,
+  });
+});
+
 export const CourseController = {
   createCourse,
   getAllCourse,
   getCourseById,
   updateCourse,
   deleteCourse,
+  getUserCourses,
+  enrollCourse
 };

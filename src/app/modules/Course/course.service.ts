@@ -30,7 +30,36 @@ const getAllCourse = async (query: Record<string, unknown>) => {
   return { result, meta };
 };
 
+const getCourseById = async (id: string) => {
+  const course = await Course.findById(id).populate('modules');
+  if (!course) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+  return course;
+};
+
+const updateCourse = async (id: string, payload: Partial<ICourse>) => {
+  const course = await Course.findById(id);
+  if (!course) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+  const result = await Course.findByIdAndUpdate(id, payload, { new: true });
+  return result;
+};
+
+const deleteCourse = async (id: string) => {
+  const course = await Course.findById(id);
+  if (!course) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+  const result = await Course.findByIdAndDelete(id);
+  return result;
+};
+
 export const CourseService = {
   createCourse,
   getAllCourse,
+  getCourseById,
+  updateCourse,
+  deleteCourse,
 };
